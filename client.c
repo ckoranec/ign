@@ -6,7 +6,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netdb.h>
-
+#include <ctype.h>
 void error(const char *error)
 {
     perror(error);
@@ -17,10 +17,13 @@ int main(int ac, char **av)
 {
     int sockfd, portno, n, i;
     char buffer[255];
+	FILE *f;
+	int words;
+	char c;
 
     struct sockaddr_in serv_addr;
     struct hostent *server;
-
+	words = 0;
     if(ac < 3)
     {
         fprintf(stderr,"useage %s hostname port\n", av[0]);
@@ -59,6 +62,26 @@ int main(int ac, char **av)
 		if(i == 0)
 			break;
 	}
+
+    f = fopen("hello.txt" , "r");
+    while((c = getc(f)) != EOF)
+{
+	fscanf(f,"%s", buffer);
+	if(isspace(c) || c == '\t')
+		words++;
+}
+
+write(sockfd, &words, sizeof(int));
+rewind(f);
+
+char ch;
+while(ch != EOF)
+{
+    fscanf(f, "%s", buffer);
+    write(sockfd, buffer, 255);
+    ch = fgetc(f);
+}
+printf("files ok");
 	close(sockfd);
 	return(0);
 }

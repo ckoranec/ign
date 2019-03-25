@@ -5,6 +5,8 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <netdb.h>
+#include <ctype.h>
 
 void error(const char *error)
 {
@@ -16,7 +18,7 @@ int main(int ac, char **av)
 {
 	int sockfd, newsockfd, portno, n, i;
 	char buff[255];
-
+	FILE *fp;
 	struct sockaddr_in serv_addr, cli_addr;
 	socklen_t clilen;//32 bit
 
@@ -63,6 +65,20 @@ int main(int ac, char **av)
 			break;
 	}
 
+	int ch = 0;
+	fp = fopen("hello recived", "a");
+	int words;
+
+	read(newsockfd, &words, sizeof(int));
+
+	while(ch != words)
+	{
+		read(newsockfd, buff, 255);
+		fprintf(fp, "%s ", buff);
+		ch++;
+	}
+
+	printf("files good man");
 	close(newsockfd);
 	close(sockfd);
 	return(0);
